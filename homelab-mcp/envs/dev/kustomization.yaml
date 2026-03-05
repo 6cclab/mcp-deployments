@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+images:
+- name: ghcr.io/6cclab/homelab/homelab-mcp
+  newName: ghcr.io/6cclab/homelab/homelab-mcp
+  newTag: acd9bcba836526744a78ad048046dbb1d7e6a0c4
+patches:
+- path: ./deployment.yaml
+resources:
+- ../../base
+- ingress.yaml

@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homelab-mcp
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: letsencrypt-dev
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - homelab-mcp.apps.dev-01.6cclab.dev
+      secretName: homelab-mcp-dev-tls
+  rules:
+    - host: homelab-mcp.apps.dev-01.6cclab.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: homelab-mcp
+                port:
+                  name: http

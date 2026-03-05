@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homelab-mcp
+  annotations:
+    secrets.infisical.com/auto-reload: 'true'
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homelab-mcp
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: homelab-mcp
+    spec:
+      serviceAccountName: homelab-mcp
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - name: workspace
+          emptyDir: {}
+      containers:
+        - name: homelab-mcp
+          image: ghcr.io/6cclab/homelab/homelab-mcp
+          imagePullPolicy: IfNotPresent
+          command: ['/bin/sh', '-c']
+          args:
+            - |
+              git clone --depth=1 https://${GITHUB_PAT}@github.com/6cclab/homelab.git /tmp/homelab || echo "Warning: failed to clone homelab repo"
+              node dist/index.js
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+          envFrom:
+            - configMapRef:
+                name: homelab-mcp-config
+            - secretRef:
+                name: homelab-mcp
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: homelab-mcp
+            - name: PORT
+              value: '3100'
+            - name: HOMELAB_REPO_PATH
+              value: /tmp/homelab
+          ports:
+            - containerPort: 3100
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /uptime
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+            successThreshold: 1
+          lifecycle:
+            preStop:
+              exec:
+                command: ['/bin/sh', '-c', 'sleep 30s']
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '50m'

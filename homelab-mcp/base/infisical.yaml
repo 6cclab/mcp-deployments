@@ -1,0 +1,26 @@
+apiVersion: secrets.infisical.com/v1alpha1
+kind: InfisicalSecret
+metadata:
+  name: homelab-mcp
+spec:
+  hostAPI: https://infisical.6cclab.dev/api
+  resyncInterval: 60
+  authentication:
+    kubernetesAuth:
+      identityId: ccebb465-42d4-4b19-9dac-9eec7a9e5613
+      autoCreateServiceAccountToken: true
+      serviceAccountRef:
+        name: default
+        namespace: mcp
+      secretsScope:
+        projectId: 6bcf9f88-42b6-428d-8dc5-8e5e91e8657c
+        envSlug: dev
+        secretsPath: /
+        recursive: true
+  managedKubeSecretReferences:
+    - secretName: homelab-mcp
+      secretNamespace: mcp
+      creationPolicy: Owner
+      secretType: Opaque
+      template:
+        includeAllSecrets: true
