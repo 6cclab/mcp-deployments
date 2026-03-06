@@ -3,7 +3,7 @@ kind: Kustomization
 images:
 - name: ghcr.io/6cclab/homelab/homelab-mcp
   newName: ghcr.io/6cclab/homelab/homelab-mcp
-  newTag: bcf12610cbb4dcbda2b8b8a2039d93ce97871e18
+  newTag: 4416b55243a5eff8bf856b967925321d7e3644c6
 patches:
 - path: ./deployment.yaml
 resources:
