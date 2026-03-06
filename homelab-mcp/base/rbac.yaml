@@ -3,6 +3,7 @@ kind: ClusterRole
 metadata:
   name: homelab-mcp
 rules:
+  # Core K8s resources (read-only)
   - apiGroups: [""]
     resources:
       - nodes
@@ -20,7 +21,19 @@ rules:
       - deployments
       - statefulsets
       - daemonsets
+      - replicasets
     verbs: ["get", "list", "watch"]
+  # Scale + restart (patch for rollout restart and scaling)
+  - apiGroups: ["apps"]
+    resources:
+      - deployments/scale
+      - statefulsets/scale
+    verbs: ["get", "patch", "update"]
+  - apiGroups: ["apps"]
+    resources:
+      - deployments
+      - statefulsets
+    verbs: ["patch"]
   - apiGroups: ["networking.k8s.io"]
     resources:
       - ingresses
@@ -30,6 +43,44 @@ rules:
       - nodes
       - pods
     verbs: ["get", "list"]
+
+  # RBAC introspection
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources:
+      - roles
+      - rolebindings
+      - clusterroles
+      - clusterrolebindings
+    verbs: ["get", "list"]
+
+  # CRD discovery
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources:
+      - customresourcedefinitions
+    verbs: ["get", "list"]
+
+  # Traefik CRDs
+  - apiGroups: ["traefik.io"]
+    resources:
+      - ingressroutes
+      - ingressroutetcps
+      - middlewares
+      - tlsstores
+    verbs: ["get", "list"]
+
+  # Infisical CRDs
+  - apiGroups: ["secrets.infisical.com"]
+    resources:
+      - infisicalsecrets
+    verbs: ["get", "list"]
+
+  # GitHub Actions Runner CRDs
+  - apiGroups: ["actions.summerwind.dev"]
+    resources:
+      - runners
+      - runnerdeployments
+      - horizontalrunnerautoscalers
+    verbs: ["get", "list", "patch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
