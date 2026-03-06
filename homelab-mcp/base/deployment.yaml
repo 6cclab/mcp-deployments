@@ -49,6 +49,8 @@ spec:
               value: '3100'
             - name: HOMELAB_REPO_PATH
               value: /tmp/homelab
+            - name: AUTH_SERVER_URL
+              value: https://oauth.apps.dev-01.6cclab.dev
           ports:
             - containerPort: 3100
               name: http
