@@ -43,8 +43,6 @@ spec:
             - secretRef:
                 name: homelab-mcp
           env:
-            - name: OTEL_SERVICE_NAME
-              value: homelab-mcp
             - name: PORT
               value: '3100'
             - name: HOMELAB_REPO_PATH

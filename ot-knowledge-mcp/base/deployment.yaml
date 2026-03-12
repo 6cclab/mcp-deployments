@@ -27,8 +27,6 @@ spec:
           image: ghcr.io/anpato/ot-knowledge-mcp
           imagePullPolicy: Always
           env:
-            - name: OTEL_SERVICE_NAME
-              value: ot-knowledge-mcp
             - name: PORT
               value: '3000'
           ports:
