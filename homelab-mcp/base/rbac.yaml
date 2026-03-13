@@ -74,6 +74,19 @@ rules:
       - infisicalsecrets
     verbs: ["get", "list"]
 
+  # Argo Rollouts CRDs
+  - apiGroups: ["argoproj.io"]
+    resources:
+      - rollouts
+      - rollouts/status
+      - analysisruns
+      - analysistemplates
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["argoproj.io"]
+    resources:
+      - rollouts
+    verbs: ["patch"]
+
   # GitHub Actions Runner CRDs
   - apiGroups: ["actions.summerwind.dev"]
     resources:
